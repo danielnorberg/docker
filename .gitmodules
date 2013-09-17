@@ -1,0 +1,6 @@
+[submodule "lvm2"]
+	path = lvm2
+	url = git@ghe.spotify.net:nycsi/lvm2.git
+[submodule "go"]
+	path = go
+	url = git@ghe.spotify.net:nycsi/golang-amd64
