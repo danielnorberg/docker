@@ -1,41 +1,29 @@
-.PHONY: all binary build cross default docs docs-build docs-shell shell test test-integration
+VENDOR_DIR := $(CURDIR)/vendor
 
-GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-DOCKER_IMAGE := docker:$(GIT_BRANCH)
-DOCKER_DOCS_IMAGE := docker-docs:$(GIT_BRANCH)
-DOCKER_RUN_DOCKER := docker run -rm -i -t -privileged -e TESTFLAGS -v $(CURDIR)/bundles:/go/src/github.com/dotcloud/docker/bundles "$(DOCKER_IMAGE)"
+GOPATH ?= $(VENDOR_DIR)
+export GOPATH
 
-default: binary
+ifeq ($(VERBOSE), 1)
+GO_OPTIONS += -v
+endif
 
-all: build
-	$(DOCKER_RUN_DOCKER) hack/make.sh
+VERSION=$(shell cat VERSION)
 
-binary: build
-	$(DOCKER_RUN_DOCKER) hack/make.sh binary
+.PHONY: all clean
 
-cross: build
-	$(DOCKER_RUN_DOCKER) hack/make.sh binary cross
+all:
+	git submodule init && git submodule update
+	test -f $(CURDIR)/build/lib/libdevmapper.a || (cd lvm2 && ./configure --prefix $(CURDIR)/build --enable-static_link && make device-mapper && make install_device-mapper)
+	PATH="$(PATH):$(CURDIR)/go/bin" GOROOT="$(CURDIR)/go" CGO_CFLAGS="-I $(CURDIR)/build/include/" CGO_LDFLAGS="-L $(CURDIR)/build/lib/" ./hack/make.sh binary
 
-docs: docs-build
-	docker run -rm -i -t -p 8000:8000 "$(DOCKER_DOCS_IMAGE)"
+clean:
+	rm -rf $(dir $(DOCKER_BIN))
 
-docs-shell: docs-build
-	docker run -rm -i -t -p 8000:8000 "$(DOCKER_DOCS_IMAGE)" bash
-
-test: build
-	$(DOCKER_RUN_DOCKER) hack/make.sh test test-integration
-
-test-integration: build
-	$(DOCKER_RUN_DOCKER) hack/make.sh test-integration
-
-shell: build
-	$(DOCKER_RUN_DOCKER) bash
-
-build: bundles
-	docker build -rm -t "$(DOCKER_IMAGE)" .
-
-docs-build:
-	docker build -rm -t "$(DOCKER_DOCS_IMAGE)" docs
-
-bundles:
-	mkdir bundles
+install:
+	mkdir -p ${DESTDIR}/usr/bin
+	mkdir -p ${DESTDIR}/etc/init
+	mkdir -p ${DESTDIR}/DEBIAN
+	install -m 0755 bundles/${VERSION}/binary/docker-${VERSION} ${DESTDIR}/usr/bin/docker
+	install -o root -m 0644 debian/docker.upstart ${DESTDIR}/etc/init/docker.conf
+	install debian/lxc-docker.prerm ${DESTDIR}/DEBIAN/prerm
+	install debian/lxc-docker.postinst ${DESTDIR}/DEBIAN/postinst
