@@ -1,0 +1,34 @@
+Source: lxc-docker
+Section: misc
+Priority: extra
+Maintainer: Daniel Mizyrycki <daniel@dotcloud.com>
+Build-Depends:
+ autotools-dev,
+ debhelper,
+ devscripts,
+ git,
+ libapparmor-dev,
+ libcap-dev,
+ liblzo2-2,
+ libsqlite3-0,
+ libsqlite3-dev,
+Standards-Version: 3.9.3
+Homepage: http://github.com/dotcloud/docker
+
+Package: lxc-docker
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+ aufs-tools,
+ bsdtar,
+ libsqlite3-0,
+ lxc,
+Conflicts: docker
+Description: lxc-docker is a Linux container runtime
+ Docker complements LXC with a high-level API which operates at the process
+ level. It runs unix processes with strong guarantees of isolation and
+ repeatability across servers.
+ Docker is a great building block for automating distributed systems:
+ large-scale web deployments, database clusters, continuous deployment systems,
+ private PaaS, service-oriented architectures, etc.
