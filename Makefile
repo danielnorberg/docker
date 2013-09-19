@@ -21,9 +21,4 @@ clean:
 
 install:
 	mkdir -p ${DESTDIR}/usr/bin
-	mkdir -p ${DESTDIR}/etc/init
-	mkdir -p ${DESTDIR}/DEBIAN
 	install -m 0755 bundles/${VERSION}/binary/docker-${VERSION} ${DESTDIR}/usr/bin/docker
-	install -o root -m 0644 debian/docker.upstart ${DESTDIR}/etc/init/docker.conf
-	install debian/lxc-docker.prerm ${DESTDIR}/DEBIAN/prerm
-	install debian/lxc-docker.postinst ${DESTDIR}/DEBIAN/postinst

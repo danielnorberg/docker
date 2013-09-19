@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+export DH_VERBOSE=1
+
+# Don't strip as the sha1 digest of dockerinit is used by docker
+# to verify that they're from the same build
+DEB_BUILD_OPTIONS += nostrip
+export DEB_BUILD_OPTIONS
+
+%:
+	dh ${@} --with autotools_dev
