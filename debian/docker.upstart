@@ -7,7 +7,7 @@ respawn
 
 script
 	DOCKER=/usr/bin/$UPSTART_JOB
-	DOCKER_OPTS=
+	DOCKER_OPTS="-H=unix:///var/run/docker.sock -H=tcp://0.0.0.0:4160"
 	if [ -f /etc/default/$UPSTART_JOB ]; then
 		. /etc/default/$UPSTART_JOB
 	fi
