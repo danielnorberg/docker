@@ -1035,6 +1035,12 @@ func (cli *DockerCli) CmdPush(args ...string) error {
 	if err != nil {
 		return err
 	}
+
+	// we do not allow default pushing to the public registry
+	if registry.IndexServerAddress() == hostname && !strings.Contains(name, registry.IndexServerAddress()) {
+		return fmt.Errorf("You must explicitly specify the public registry if you want to push to it")
+	}
+
 	// Resolve the Auth config relevant for this server
 	authConfig := cli.configFile.ResolveAuthConfig(hostname)
 	// If we're not using a custom registry, we know the restrictions
