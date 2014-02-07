@@ -18,6 +18,7 @@ type DaemonConfig struct {
 	Root                        string
 	AutoRestart                 bool
 	Dns                         []string
+	DnsSearch                   []string
 	EnableIptables              bool
 	EnableIpForward             bool
 	DefaultIp                   net.IP
@@ -46,6 +47,9 @@ func DaemonConfigFromJob(job *engine.Job) *DaemonConfig {
 	}
 	if dns := job.GetenvList("Dns"); dns != nil {
 		config.Dns = dns
+	}
+	if dnsSearch := job.GetenvList("DnsSearch"); dnsSearch != nil {
+		config.DnsSearch = dnsSearch
 	}
 	if mtu := job.GetenvInt("Mtu"); mtu != 0 {
 		config.Mtu = mtu

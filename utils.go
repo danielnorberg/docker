@@ -35,6 +35,7 @@ func CompareConfig(a, b *Config) bool {
 	}
 	if len(a.Cmd) != len(b.Cmd) ||
 		len(a.Dns) != len(b.Dns) ||
+		len(a.DnsSearch) != len(b.DnsSearch) ||
 		len(a.Env) != len(b.Env) ||
 		len(a.PortSpecs) != len(b.PortSpecs) ||
 		len(a.ExposedPorts) != len(b.ExposedPorts) ||
@@ -50,6 +51,11 @@ func CompareConfig(a, b *Config) bool {
 	}
 	for i := 0; i < len(a.Dns); i++ {
 		if a.Dns[i] != b.Dns[i] {
+			return false
+		}
+	}
+	for i := 0; i < len(a.DnsSearch); i++ {
+		if a.DnsSearch[i] != b.DnsSearch[i] {
 			return false
 		}
 	}
@@ -172,6 +178,12 @@ func MergeConfig(userConf, imageConf *Config) error {
 	} else {
 		//duplicates aren't an issue here
 		userConf.Dns = append(userConf.Dns, imageConf.Dns...)
+	}
+	if userConf.DnsSearch == nil || len(userConf.DnsSearch) == 0 {
+		userConf.DnsSearch = imageConf.DnsSearch
+	} else {
+		//duplicates aren't an issue here
+		userConf.DnsSearch = append(userConf.DnsSearch, imageConf.DnsSearch...)
 	}
 	if userConf.Entrypoint == nil || len(userConf.Entrypoint) == 0 {
 		userConf.Entrypoint = imageConf.Entrypoint

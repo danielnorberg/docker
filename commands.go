@@ -1768,6 +1768,7 @@ func parseRun(cmd *flag.FlagSet, args []string, sysInfo *sysinfo.SysInfo) (*Conf
 		flPublish     ListOpts
 		flExpose      ListOpts
 		flDns         ListOpts
+		flDnsSearch   ListOpts
 		flVolumesFrom ListOpts
 		flLxcOpts     ListOpts
 
@@ -1799,6 +1800,7 @@ func parseRun(cmd *flag.FlagSet, args []string, sysInfo *sysinfo.SysInfo) (*Conf
 	cmd.Var(&flPublish, []string{"p", "-publish"}, fmt.Sprintf("Publish a container's port to the host (format: %s) (use 'docker port' to see the actual mapping)", PortSpecTemplateFormat))
 	cmd.Var(&flExpose, []string{"#expose", "-expose"}, "Expose a port from the container without publishing it to your host")
 	cmd.Var(&flDns, []string{"#dns", "-dns"}, "Set custom dns servers")
+	cmd.Var(&flDnsSearch, []string{"#dns-search", "-dns-search"}, "Set custom dns search domains")
 	cmd.Var(&flVolumesFrom, []string{"#volumes-from", "-volumes-from"}, "Mount volumes from the specified container(s)")
 	cmd.Var(&flLxcOpts, []string{"#lxc-conf", "-lxc-conf"}, "Add custom lxc options -lxc-conf=\"lxc.cgroup.cpuset.cpus = 0,1\"")
 
@@ -1922,6 +1924,7 @@ func parseRun(cmd *flag.FlagSet, args []string, sysInfo *sysinfo.SysInfo) (*Conf
 		Env:             flEnv.GetAll(),
 		Cmd:             runCmd,
 		Dns:             flDns.GetAll(),
+		DnsSearch:       flDnsSearch.GetAll(),
 		Image:           image,
 		Volumes:         flVolumes.GetMap(),
 		VolumesFrom:     strings.Join(flVolumesFrom.GetAll(), ","),

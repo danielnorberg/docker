@@ -9,6 +9,7 @@ func TestCompareConfig(t *testing.T) {
 	volumes1["/test1"] = struct{}{}
 	config1 := Config{
 		Dns:         []string{"1.1.1.1", "2.2.2.2"},
+		DnsSearch:   []string{"foo", "bar"},
 		PortSpecs:   []string{"1111:1111", "2222:2222"},
 		Env:         []string{"VAR1=1", "VAR2=2"},
 		VolumesFrom: "11111111",
@@ -16,6 +17,7 @@ func TestCompareConfig(t *testing.T) {
 	}
 	config2 := Config{
 		Dns:         []string{"0.0.0.0", "2.2.2.2"},
+		DnsSearch:   []string{"foo", "bar"},
 		PortSpecs:   []string{"1111:1111", "2222:2222"},
 		Env:         []string{"VAR1=1", "VAR2=2"},
 		VolumesFrom: "11111111",
@@ -23,6 +25,7 @@ func TestCompareConfig(t *testing.T) {
 	}
 	config3 := Config{
 		Dns:         []string{"1.1.1.1", "2.2.2.2"},
+		DnsSearch:   []string{"foo", "bar"},
 		PortSpecs:   []string{"0000:0000", "2222:2222"},
 		Env:         []string{"VAR1=1", "VAR2=2"},
 		VolumesFrom: "11111111",
@@ -30,6 +33,7 @@ func TestCompareConfig(t *testing.T) {
 	}
 	config4 := Config{
 		Dns:         []string{"1.1.1.1", "2.2.2.2"},
+		DnsSearch:   []string{"foo", "bar"},
 		PortSpecs:   []string{"0000:0000", "2222:2222"},
 		Env:         []string{"VAR1=1", "VAR2=2"},
 		VolumesFrom: "22222222",
@@ -39,10 +43,19 @@ func TestCompareConfig(t *testing.T) {
 	volumes2["/test2"] = struct{}{}
 	config5 := Config{
 		Dns:         []string{"1.1.1.1", "2.2.2.2"},
+		DnsSearch:   []string{"foo", "bar"},
 		PortSpecs:   []string{"0000:0000", "2222:2222"},
 		Env:         []string{"VAR1=1", "VAR2=2"},
 		VolumesFrom: "11111111",
 		Volumes:     volumes2,
+	}
+	config6 := Config{
+		Dns:         []string{"1.1.1.1", "2.2.2.2"},
+		DnsSearch:   []string{"foos", "bars"},
+		PortSpecs:   []string{"1111:1111", "2222:2222"},
+		Env:         []string{"VAR1=1", "VAR2=2"},
+		VolumesFrom: "11111111",
+		Volumes:     volumes1,
 	}
 	if CompareConfig(&config1, &config2) {
 		t.Fatalf("CompareConfig should return false, Dns are different")
@@ -56,6 +69,9 @@ func TestCompareConfig(t *testing.T) {
 	if CompareConfig(&config1, &config5) {
 		t.Fatalf("CompareConfig should return false, Volumes are different")
 	}
+	if CompareConfig(&config1, &config6) {
+		t.Fatalf("CompareConfig should return false, DnsSearch are different")
+	}
 	if !CompareConfig(&config1, &config1) {
 		t.Fatalf("CompareConfig should return true")
 	}
@@ -67,6 +83,7 @@ func TestMergeConfig(t *testing.T) {
 	volumesImage["/test2"] = struct{}{}
 	configImage := &Config{
 		Dns:         []string{"1.1.1.1", "2.2.2.2"},
+		DnsSearch:   []string{"foo", "bar"},
 		PortSpecs:   []string{"1111:1111", "2222:2222"},
 		Env:         []string{"VAR1=1", "VAR2=2"},
 		VolumesFrom: "1111",
@@ -77,6 +94,7 @@ func TestMergeConfig(t *testing.T) {
 	volumesUser["/test3"] = struct{}{}
 	configUser := &Config{
 		Dns:       []string{"3.3.3.3"},
+		DnsSearch: []string{"baz"},
 		PortSpecs: []string{"3333:2222", "3333:3333"},
 		Env:       []string{"VAR2=3", "VAR3=3"},
 		Volumes:   volumesUser,
@@ -92,6 +110,15 @@ func TestMergeConfig(t *testing.T) {
 	for _, dns := range configUser.Dns {
 		if dns != "1.1.1.1" && dns != "2.2.2.2" && dns != "3.3.3.3" {
 			t.Fatalf("Expected 1.1.1.1 or 2.2.2.2 or 3.3.3.3, found %s", dns)
+		}
+	}
+
+	if len(configUser.DnsSearch) != 3 {
+		t.Fatalf("Expected 3 DnsSearch, foo, bar and baz, found %d", len(configUser.DnsSearch))
+	}
+	for _, dnsSearch := range configUser.DnsSearch {
+		if dnsSearch != "foo" && dnsSearch != "bar" && dnsSearch != "baz" {
+			t.Fatalf("Expected foo or bar or baz, found %s", dnsSearch)
 		}
 	}
 
