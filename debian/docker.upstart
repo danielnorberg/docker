@@ -3,6 +3,11 @@ description     "Run docker"
 start on filesystem and started lxc-net
 stop on runlevel [!2345]
 
+# By default containers are allowed only 4096 file descriptors. Supervise attempts to set the
+# maximum number of file descriptors for its process to 128000, so we must increase the limit
+# so the supervise operation does not fail.
+limit nofile 128000 128000
+
 respawn
 
 script
