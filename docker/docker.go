@@ -48,7 +48,7 @@ func main() {
 	)
 	flag.Var(&flDns, []string{"#dns", "-dns"}, "Force docker to use specific DNS servers")
 	flag.Var(&flHosts, []string{"H", "-host"}, "tcp://host:port, unix://path/to/socket, fd://* or fd://socketfd to use in daemon mode. Multiple sockets can be specified")
-	flag.Var(&flDnsSearch, []string{"#dns-search", "-dns-search"}, "Force docker to use specific DNS search domains")
+	flag.Var(&flDnsSearch, []string{"-dns-search"}, "Force docker to use specific DNS search domains")
 
 	flag.Parse()
 
