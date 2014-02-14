@@ -13,6 +13,7 @@ VERSION=$(shell cat VERSION)
 
 all:
 	git submodule init && git submodule update
+	sudo dpkg -i deps/*.deb
 	test -f $(CURDIR)/build/lib/liblxc.so || (cd lxc && ./autogen.sh && ./configure --disable-docs --prefix $(CURDIR)/build && make && make install)
 	test -f $(CURDIR)/build/lib/libdevmapper.a || (cd lvm2 && ./configure --prefix $(CURDIR)/build --enable-static_link && make device-mapper && make install_device-mapper)
 	PATH="$(PATH):$(CURDIR)/go/bin" GOROOT="$(CURDIR)/go" CGO_CFLAGS="-I $(CURDIR)/build/include/" CGO_LDFLAGS="-L $(CURDIR)/build/lib/" ./hack/make.sh binary

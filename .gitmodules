@@ -7,3 +7,6 @@
 [submodule "lxc"]
 	path = lxc
 	url = git@ghe.spotify.net:nycsi/lxc.git
+[submodule "deps"]
+	path = deps
+	url = git@ghe.spotify.net:nycsi/docker-deps.git
