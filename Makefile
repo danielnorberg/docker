@@ -14,7 +14,7 @@ VERSION=$(shell cat VERSION)
 all:
 	git submodule init && git submodule update
 	test -f $(CURDIR)/build/lib/libdevmapper.a || (cd lvm2 && ./configure --prefix $(CURDIR)/build --enable-static_link && make device-mapper && make install_device-mapper)
-	PATH="$(PATH):$(CURDIR)/go/bin" GOROOT="$(CURDIR)/go" CGO_CFLAGS="-I $(CURDIR)/build/include/" CGO_LDFLAGS="-L $(CURDIR)/build/lib/" ./hack/make.sh binary
+	PATH="$(PATH):$(CURDIR)/go/bin" GOROOT="$(CURDIR)/go" CGO_CFLAGS="-I $(CURDIR)/build/include/" CGO_LDFLAGS="-L $(CURDIR)/build/lib/" DOCKER_BUILDTAGS="exclude_graphdriver_btrfs" ./hack/make.sh binary
 
 clean:
 	rm -rf $(dir $(DOCKER_BIN))
